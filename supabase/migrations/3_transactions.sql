@@ -1,3 +1,9 @@
+create type public.order_status as enum (
+    'PENDING',
+    'SHIPPED',
+    'DELIVERED'
+);
+
 create table public.orders (
     id uuid primary key default gen_random_uuid (),
     created_at timestamp(3) not null default now(),

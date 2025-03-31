@@ -1,5 +1,6 @@
-import postgres from "https://esm.sh/postgres@3.4.5/types/index.d.ts";
-import { drizzle } from "https://deno.land/x/drizzle@v0.23.85/postgres.ts";
+import postgres, {
+  drizzle,
+} from "https://deno.land/x/drizzle@v0.23.85/postgres.ts";
 import {
   pgTable,
   text,
@@ -8,13 +9,13 @@ import {
   date,
   pgEnum,
   numeric,
-} from "https://deno.land/x/drizzle/pg-core.ts";
-import { InferModel } from "https://deno.land/x/drizzle/mod.ts";
+} from "https://deno.land/x/drizzle@v0.23.85/pg-core.ts";
+import { InferModel } from "https://deno.land/x/drizzle@v0.23.85/mod.ts";
 
 const databaseUrl = Deno.env.get("SUPABASE_DB_URL")!;
 const client = postgres(databaseUrl);
 
-const orderStatus = pgEnum("order_status", ["PENDING", "COMPLETED"]);
+const orderStatus = pgEnum("order_status", ["PENDING", "SHIPPED", "DELIVERED"]);
 
 const orders = pgTable("orders", {
   id: uuid("id").primaryKey(),
@@ -29,7 +30,7 @@ const orders = pgTable("orders", {
   shippingTotal: numeric("shipping_total").default("0").notNull(),
 });
 
-export const lineItems = pgTable("line_items", {
+const lineItems = pgTable("line_items", {
   id: uuid("id").primaryKey(),
   orderId: uuid("order_id")
     .notNull()
@@ -43,11 +44,11 @@ export const lineItems = pgTable("line_items", {
   discount: numeric("discount").default("0").notNull(),
 });
 
-export type Order = InferModel<typeof orders>;
-export type NewOrder = InferModel<typeof orders, "insert">;
+type Order = InferModel<typeof orders>;
+type NewOrder = InferModel<typeof orders, "insert">;
 
-export type LineItem = InferModel<typeof lineItems>;
-export type NewLineItem = InferModel<typeof lineItems, "insert">;
+type LineItem = InferModel<typeof lineItems>;
+type NewLineItem = InferModel<typeof lineItems, "insert">;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,7 +66,14 @@ Deno.serve(async (req: Request) => {
     let order: Order & { lineItems?: LineItem[] };
     await client.begin(async (transaction) => {
       const db = drizzle(transaction);
-      const insertedOrders = await db.insert(orders).values(body).returning();
+      const insertedOrders = await db
+        .insert(orders)
+        .values({
+          status: body.status,
+          issueDate: body.issueDate,
+          shippingTotal: body.shippingTotal,
+        } as NewOrder)
+        .returning();
       order = insertedOrders[0];
 
       const insertedLineItems = await db
