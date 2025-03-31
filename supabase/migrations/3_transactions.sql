@@ -1,10 +1,10 @@
 create table public.orders (
     id uuid primary key default gen_random_uuid (),
-    created_at timestamp(3) default now(),
-    updated_at timestamp(3) default now(),
-    status public.order_status default 'PENDING',
-    issue_date date default now(),
-    shipping_total numeric default 0
+    created_at timestamp(3) not null default now(),
+    updated_at timestamp(3) not null default now(),
+    status public.order_status not null default 'PENDING',
+    issue_date date not null default now(),
+    shipping_total numeric not null default 0
 );
 
 create table public.line_items (

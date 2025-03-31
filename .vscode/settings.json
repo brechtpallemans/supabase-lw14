@@ -1,0 +1,13 @@
+{
+  "deno.enablePaths": ["supabase/functions"],
+  "deno.lint": true,
+  "deno.unstable": ["bare-node-builtins", "webgpu"],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "pgFormatter.functionCase": "lowercase",
+  "pgFormatter.keywordCase": "lowercase",
+  "pgFormatter.noSpaceFunction": false,
+  "pgFormatter.noExtraLine": true,
+  "pgFormatter.wrapLimit": 100
+}
