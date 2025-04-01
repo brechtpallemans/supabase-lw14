@@ -1,13 +1,10 @@
 create table public.events (
-    id uuid not null default gen_random_uuid (),
+    id uuid not null default gen_random_uuid () primary key,
     created_at timestamp(3) with time zone not null default now(),
     updated_at timestamp(3) with time zone not null default now(),
     deleted_at timestamp(3) with time zone null,
-    deleted_by_user_id uuid null,
-    constraint events_pkey primary key (id),
-    constraint events_deleted_by_user_id_fkey foreign key (deleted_by_user_id) references auth.users (id) on delete set null
-)
-tablespace pg_default;
+    deleted_by_user_id uuid null references auth.users on delete set null
+);
 
 alter table public.events enable row level security;
 

@@ -5,7 +5,7 @@ create type public.order_status as enum (
 );
 
 create table public.orders (
-    id uuid primary key default gen_random_uuid (),
+    id uuid default gen_random_uuid () primary key,
     created_at timestamp(3) not null default now(),
     updated_at timestamp(3) not null default now(),
     status public.order_status not null default 'PENDING',
@@ -14,7 +14,7 @@ create table public.orders (
 );
 
 create table public.line_items (
-    id uuid primary key default gen_random_uuid (),
+    id uuid default gen_random_uuid () primary key,
     order_id uuid references public.orders (id) on delete cascade,
     product_id uuid not null, -- Should reference public.products
     name text not null,

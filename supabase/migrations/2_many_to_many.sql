@@ -1,14 +1,12 @@
 create table public.events (
-    id uuid not null default gen_random_uuid (),
-    constraint events_pkey primary key (id)
+    id uuid not null default gen_random_uuid () primary key
 )
 tablespace pg_default;
 
 alter table public.events enable row level security;
 
 create table public.profiles (
-    id uuid not null default auth.uid (),
-    constraint profiles_pkey primary key (id),
+    id uuid not null default auth.uid () primary key,
     constraint profiles_id_fkey foreign key (id) references auth.users (id) on delete cascade
 )
 tablespace pg_default;
